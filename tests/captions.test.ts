@@ -13,8 +13,9 @@ export const runCaptionsTests = () => {
 
   const captionsPath = path.join(fixturesDir, "player_captions.json");
   const captions = JSON.parse(fs.readFileSync(captionsPath, "utf8"));
-  const url = extractCaptionUrl(captions, "ru");
-  assert.equal(url, "https://example.com/captions", "Should pick matching lang ASR track");
+  const track = extractCaptionUrl(captions, "ru");
+  assert.equal(track.baseUrl, "https://example.com/captions", "Should pick matching lang ASR track");
+  assert.equal(track.languageCode, "ru", "Should return matched language code");
 
   assert.throws(
     () => extractCaptionUrl({}, "fr"),

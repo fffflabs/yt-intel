@@ -15,7 +15,6 @@ export type VideoRecord = {
   duration: number;
   published: string;
   text: string;
-  captions_lang: string;
 };
 
 type FetchAndSaveOpts = {
@@ -45,8 +44,7 @@ const buildResult = (
   videoId: string,
   channel: string,
   data: any,
-  text: string,
-  captionsLang: string
+  text: string
 ): VideoRecord => {
   const details = data?.videoDetails ?? {};
   return {
@@ -56,8 +54,7 @@ const buildResult = (
     views: Number(details.viewCount ?? 0),
     duration: Number(details.lengthSeconds ?? 0),
     published: extractPublishedDate(data),
-    text,
-    captions_lang: captionsLang
+    text
   };
 };
 
@@ -100,7 +97,7 @@ export const fetchSubsAndSave = async (opts: FetchAndSaveOpts): Promise<FetchOut
 
     logger.info("Downloading captions...");
     const text = await captionsFetcher(captionTrack.baseUrl);
-    const result = buildResult(videoId, channel, playerData, text, captionTrack.languageCode);
+    const result = buildResult(videoId, channel, playerData, text);
 
     await ensureDir(outDir);
     await writeJson(outPath, result);

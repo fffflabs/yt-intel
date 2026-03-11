@@ -29,11 +29,8 @@ export const runYoutubeTests = async () => {
     setHttpClient(globalThis.fetch as any);
 
     const noCaptions = loadJson("player_no_captions.json");
-    assert.throws(
-      () => extractCaptionUrl(noCaptions, "ru"),
-      (err: any) => err instanceof NoSubtitlesError,
-      "Should throw when no matching ASR lang"
-    );
+    const fallback = extractCaptionUrl(noCaptions, "ru");
+    assert.equal(fallback.languageCode, "en", "Should fall back to ASR English when requested lang missing");
   } finally {
     Math.random = originalMathRandom;
   }

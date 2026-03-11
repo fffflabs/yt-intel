@@ -1,0 +1,29 @@
+[
+  {
+    "id": "DevOops_conf",
+    "slug": "devoops_conf",
+    "title": "DevOops Conference",
+    "lang": "ru",
+    "list": "lists/devoops_ids.txt",
+    "transcripts_dir": "video_data/DevOops_conf",
+    "export": "exports/DevOops_conf.json"
+  },
+  {
+    "id": "HighLoadChannel",
+    "slug": "highload_channel",
+    "title": "HighLoad Channel",
+    "lang": "ru",
+    "list": "lists/highload_ids.txt",
+    "transcripts_dir": "video_data/HighLoadChannel",
+    "export": "exports/HighLoadChannel.json"
+  },
+  {
+    "id": "finopsfoundation",
+    "slug": "finopsfoundation",
+    "title": "FinOps Foundation",
+    "lang": "en",
+    "list": "lists/finopsfoundation.txt",
+    "transcripts_dir": "video_data/finopsfoundation",
+    "export": "exports/finopsfoundation.json"
+  }
+]

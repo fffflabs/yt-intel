@@ -1,39 +1,15 @@
 # yt-intel — YouTube transcript fetcher
 
-A tool for bulk downloading auto-generated subtitles (ASR) from YouTube — including videos where standard tools like `yt-dlp` or `youtube-transcript-api` fail.
+TypeScript CLI to pull YouTube ASR transcripts in bulk using `youtubei/v1/player`, with retries, backoff, and clean JSON outputs.
 
-## 🚀 Features
+## Quick start
+- Install: `npm install`
+- Configure `.env` (example below)
+- Fetch one: `npm run fetch -- VIDEO_ID [lang] [channel]`
+- Batch from `video_db.json`: `npm run batch`
+- Export per-channel JSON: `npm run export [channels...]`
 
-- Bypasses YouTube API limitations using `youtubei/v1/player`
-- Supports multiple API keys and randomized user-agents
-- Stable `batch_fetch` script with retries, delays, and error handling
-- Saves transcript text along with video title, views, duration, and publish date
-- Exports clean `.json` data ready for ML / LLM processing
-
-## 📦 Structure
-
-- Primary (TypeScript): `src/cli/fetchSubs.ts`, `src/cli/batchFetch.ts`, `src/cli/exportCombined.ts`, `src/flows/fetchSingle.ts`, `src/clients/youtube.ts`.
-- Tests & fixtures: `tests/` (unit + e2e), Python baselines under `tests/fixtures/python_baseline/`.
-- Legacy Python (kept for reference): see `legacy/python/README.md` for the original scripts.
-
-## 🛠 Requirements (TypeScript/Node stack)
-
-```bash
-npm install
-```
-
-Optional: Python virtualenv only if you still need the legacy scripts:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
-
-## ⚙️ .env Example
-
-Create a `.env` file in the project root with the following content:
-
+### .env sample
 ```env
 API_KEYS=your_api_key1,your_api_key2
 USER_AGENTS=agent1,agent2
@@ -43,70 +19,13 @@ MAX_DELAY=3.5
 LOG_LEVEL=info
 ```
 
-> Note: if your shell sets `LANG`, it can override the default language; pass `lang` explicitly to the CLI or set `LANG=ru`/desired value.
+## Outputs
+- Per-video JSON at `video_data/<channel>/<id>.json`
+- Combined exports `<channel>.json` in repo root
 
-## ▶️ Usage (TS CLI)
+## Develop
+- Lint/typecheck: `npm run lint`
+- Tests (unit + CLI + e2e): `npm test`
 
-Fetch a single video:
-
-```bash
-npm run fetch -- VIDEO_ID [lang] [channel]
-```
-
-Process the full video list from `video_db.json`:
-
-```bash
-npm run batch
-```
-
-Export combined JSON files by channel:
-
-```bash
-npm run export [channels...]
-```
-
-Help flags:
-
-```bash
-npm run fetch -- --help
-npm run batch -- --help
-npm run export -- --help
-```
-
-## 🐍 Legacy Python
-
-The original Python scripts are preserved in `legacy/python/` with their own README. Use only if you need parity with the old flow; the TS CLIs above are the primary path.
-
-## 🧰 Development
-
-Type check / lint and tests:
-
-```bash
-npm run lint
-npm test
-```
-
-## 📁 Output Format
-
-Each resulting JSON contains:
-
-```json
-{
-  "video_id": "abc123",
-  "channel": "ExampleChannel",
-  "title": "Example Video Title",
-  "views": 12345,
-  "duration": 456,
-  "published": "2022-01-01",
-  "text": "Full transcript text..."
-}
-```
-
-## 🧪 Testing & baseline
-
-- Unit tests cover captions parsing, YouTube client (mocked fetch), CLI arg parsing.
-- E2E regression uses Python baseline fixture `tests/fixtures/python_baseline/video_data/DevOops_conf/-kq832Othh4.json` to ensure TS output matches.
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+## More info
+See `yt-intel.md` for the full runbook (stack, config, data layout, roadmap).

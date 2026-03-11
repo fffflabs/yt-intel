@@ -1,8 +1,0 @@
-# Ruff configuration for this project.
-target-version = "py310"
-line-length = 120
-extend-exclude = ["video_data", "archive", ".venv"]
-
-[lint]
-select = ["E", "F", "B", "I"]
-ignore = ["E501"]
