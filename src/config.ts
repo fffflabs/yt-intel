@@ -39,6 +39,21 @@ const parseList = (value: string | undefined): string[] =>
     .map((item) => item.trim())
     .filter(Boolean);
 
+const readEnv = (...keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = process.env[key];
+    if (value !== undefined && value !== "") {
+      return value;
+    }
+  }
+  return undefined;
+};
+
+const parseNumber = (value: string | undefined, fallback: number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const firstNonEmpty = (preferred: string[], fallback: string[]): string[] =>
   preferred.length > 0 ? preferred : fallback;
 
@@ -52,22 +67,30 @@ const parseLogLevel = (value: string | undefined): LogLevel => {
 };
 
 export const config: AppConfig = {
-  apiKeys: parseList(process.env.API_KEYS),
-  clientVersions: firstNonEmpty(parseList(process.env.CLIENT_VERSIONS), DEFAULT_CLIENT_VERSIONS),
-  userAgents: firstNonEmpty(parseList(process.env.USER_AGENTS), DEFAULT_USER_AGENTS),
-  defaultLang: process.env.LANG || "ru",
-  minDelaySeconds: Number(process.env.MIN_DELAY ?? 1.5),
-  maxDelaySeconds: Number(process.env.MAX_DELAY ?? 3.5),
+  apiKeys: parseList(readEnv("YT_INTEL_API_KEYS", "API_KEYS")),
+  clientVersions: firstNonEmpty(
+    parseList(readEnv("YT_INTEL_CLIENT_VERSIONS", "CLIENT_VERSIONS")),
+    DEFAULT_CLIENT_VERSIONS
+  ),
+  userAgents: firstNonEmpty(
+    parseList(readEnv("YT_INTEL_USER_AGENTS", "USER_AGENTS")),
+    DEFAULT_USER_AGENTS
+  ),
+  defaultLang: readEnv("YT_INTEL_LANG", "LANG") || "ru",
+  minDelaySeconds: parseNumber(readEnv("YT_INTEL_MIN_DELAY", "MIN_DELAY"), 1.5),
+  maxDelaySeconds: parseNumber(readEnv("YT_INTEL_MAX_DELAY", "MAX_DELAY"), 3.5),
   shortCooldown: { minSeconds: 60, maxSeconds: 90 },
   longCooldown: { minSeconds: 300, maxSeconds: 420 },
   softErrorLimit: 2,
   hardErrorLimit: 3,
-  logLevel: parseLogLevel(process.env.LOG_LEVEL)
+  logLevel: parseLogLevel(readEnv("YT_INTEL_LOG_LEVEL", "LOG_LEVEL"))
 };
 
 export const requireApiKeys = (): string[] => {
   if (config.apiKeys.length === 0) {
-    throw new Error("API_KEYS is empty. Set API_KEYS in .env (comma-separated).");
+    throw new Error(
+      "YT_INTEL_API_KEYS is empty. Set YT_INTEL_API_KEYS in .env (comma-separated)."
+    );
   }
   return config.apiKeys;
 };

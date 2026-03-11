@@ -1,5 +1,5 @@
-import { fetch } from "undici";
 import he from "he";
+import type { CaptionTrack, PlayerResponse } from "../types/youtube.js";
 
 export class NoSubtitlesError extends Error {
   code = "NO_SUBTITLES";
@@ -11,23 +11,9 @@ export class NoSubtitlesError extends Error {
 
 const hasAsrKind = (kind?: string): boolean => Boolean(kind && kind.includes("asr"));
 
-type PlayerCaptions = {
-  captions?: {
-    playerCaptionsTracklistRenderer?: {
-      captionTracks?: Array<{
-        baseUrl: string;
-        languageCode?: string;
-        kind?: string;
-      }>;
-    };
-  };
-};
-
 type SelectedTrack = { baseUrl: string; languageCode: string };
 
-type Track = { baseUrl: string; languageCode?: string; kind?: string };
-
-const pickTrack = (tracks: Track[], lang: string): SelectedTrack | null => {
+const pickTrack = (tracks: CaptionTrack[], lang: string): SelectedTrack | null => {
   const asrTracks = tracks.filter((track) => hasAsrKind(track.kind));
 
   // 1) exact language match (requested lang)
@@ -57,9 +43,8 @@ const pickTrack = (tracks: Track[], lang: string): SelectedTrack | null => {
   return null;
 };
 
-export const extractCaptionUrl = (data: PlayerCaptions, lang: string): SelectedTrack => {
-  const tracks =
-    data.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? [];
+export const extractCaptionUrl = (data: PlayerResponse, lang: string): SelectedTrack => {
+  const tracks = data.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? [];
 
   const selected = pickTrack(tracks, lang);
   if (selected) return selected;
@@ -103,7 +88,7 @@ export const parseSrv3XmlToText = (xml: string): string => {
 
 export const downloadSubsText = async (url: string): Promise<string> => {
   const finalUrl = `${url}&fmt=srv3`;
-  const response = await fetch(finalUrl);
+  const response = await globalThis.fetch(finalUrl);
 
   if (!response.ok) {
     throw new Error(`Failed to download captions: HTTP ${response.status}`);

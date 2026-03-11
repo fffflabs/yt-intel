@@ -1,0 +1,9 @@
+{
+  "video_id": "demo123abc",
+  "channel": "DevOops_conf",
+  "title": "Example conference talk",
+  "views": 1234,
+  "duration": 845,
+  "published": "2024-10-05T09:30:00-08:00",
+  "text": "This is a compact example transcript artifact produced by the fetch flow. Real outputs contain the same fields with longer normalized transcript text."
+}

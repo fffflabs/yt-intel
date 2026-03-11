@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fetchVideoData, setHttpClient } from "../src/clients/youtube.js";
 import { extractCaptionUrl, NoSubtitlesError } from "../src/captions/parse.js";
+import type { PlayerResponse } from "../src/types/youtube.js";
 import { useMockFetch } from "./helpers/mockFetch.js";
 
 const fixturesDir = path.join("tests", "fixtures");
@@ -12,7 +13,7 @@ const originalMathRandom = Math.random;
 const fixedRandom = () => 0.1; // always pick first element
 
 const loadJson = (name: string) =>
-  JSON.parse(fs.readFileSync(path.join(fixturesDir, name), "utf8"));
+  JSON.parse(fs.readFileSync(path.join(fixturesDir, name), "utf8")) as PlayerResponse;
 
 export const runYoutubeTests = async () => {
   Math.random = fixedRandom;
@@ -24,7 +25,7 @@ export const runYoutubeTests = async () => {
     setHttpClient(mock as any);
 
     const result = await fetchVideoData({ videoId: "abc123", lang: "ru", maxAttempts: 2 });
-    assert.equal((result as any).videoDetails.title, "Test title");
+    assert.equal(result.videoDetails?.title, "Test title");
     assert.equal(calls.length, 1, "Should call fetch once on success");
     setHttpClient(globalThis.fetch as any);
 
@@ -64,7 +65,7 @@ export const runYoutubeTests = async () => {
   // Caption selection without ASR should throw.
   const noCaptionTracks = { captions: { playerCaptionsTracklistRenderer: { captionTracks: [] } } };
   assert.throws(
-    () => extractCaptionUrl(noCaptionTracks as any, "ru"),
+    () => extractCaptionUrl(noCaptionTracks, "ru"),
     (err: any) => err instanceof NoSubtitlesError,
     "Should throw NoSubtitlesError when no matching ASR track"
   );

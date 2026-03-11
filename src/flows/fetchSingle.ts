@@ -4,6 +4,7 @@ import { config } from "../config.js";
 import { downloadSubsText, extractCaptionUrl, NoSubtitlesError } from "../captions/parse.js";
 import { fetchVideoData } from "../clients/youtube.js";
 import { logger } from "../logger.js";
+import type { PlayerResponse } from "../types/youtube.js";
 import { randomBetween } from "../utils/random.js";
 import { sleep } from "../utils/sleep.js";
 
@@ -32,18 +33,14 @@ type FetchOutcome =
   | { status: "no_subs"; path?: string }
   | { status: "error"; error: string };
 
-const extractPublishedDate = (data: any): string => {
-  try {
-    return data?.microformat?.playerMicroformatRenderer?.publishDate ?? "";
-  } catch {
-    return "";
-  }
+const extractPublishedDate = (data: PlayerResponse): string => {
+  return data.microformat?.playerMicroformatRenderer?.publishDate ?? "";
 };
 
 const buildResult = (
   videoId: string,
   channel: string,
-  data: any,
+  data: PlayerResponse,
   text: string
 ): VideoRecord => {
   const details = data?.videoDetails ?? {};
@@ -93,7 +90,7 @@ export const fetchSubsAndSave = async (opts: FetchAndSaveOpts): Promise<FetchOut
   try {
     logger.info("Fetching video data...", { videoId, lang });
     const playerData = await playerFetcher({ videoId, lang });
-    const captionTrack = extractCaptionUrl(playerData as any, lang);
+    const captionTrack = extractCaptionUrl(playerData, lang);
 
     logger.info("Downloading captions...");
     const text = await captionsFetcher(captionTrack.baseUrl);

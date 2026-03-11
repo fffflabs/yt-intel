@@ -5,7 +5,7 @@ import { logger } from "../logger.js";
 
 const DEFAULT_CHANNELS = ["DevOops_conf", "HighLoadChannel"];
 const INPUT_ROOT = "video_data";
-const OUTPUT_DIR = ".";
+const OUTPUT_DIR = "exports";
 const usage = "Usage: npm run export [channel...]\n       tsx src/cli/exportCombined.ts [channel...]\n       Options: -h, --help";
 
 type VideoRecord = {
@@ -21,7 +21,7 @@ type VideoRecord = {
 const collectChannelData = async (channel: string): Promise<VideoRecord[]> => {
   const channelPath = path.join(INPUT_ROOT, channel);
   try {
-    const files = await fs.readdir(channelPath);
+    const files = (await fs.readdir(channelPath)).sort();
     const combined: VideoRecord[] = [];
 
     for (const file of files) {
@@ -33,16 +33,16 @@ const collectChannelData = async (channel: string): Promise<VideoRecord[]> => {
         if (data.title && data.text && data.video_id) {
           combined.push(data);
         } else {
-          console.warn(`⚠️ Skipped incomplete file: ${filePath}`);
+          logger.warn("Skipped incomplete transcript file", { filePath });
         }
       } catch (error) {
-        console.warn(`⚠️ Error reading ${filePath}:`, error);
+        logger.warn("Error reading transcript file", { filePath, error: String(error) });
       }
     }
 
     return combined;
   } catch {
-    console.error(`❌ Folder not found: ${channelPath}`);
+    logger.warn("Channel transcript folder not found", { channelPath });
     return [];
   }
 };
@@ -63,6 +63,7 @@ export const main = async () => {
   }
 
   const channels = parsed.channels;
+  await fs.mkdir(OUTPUT_DIR, { recursive: true });
 
   for (const channel of channels) {
     logger.info(`Combining channel`, { channel });

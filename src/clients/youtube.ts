@@ -1,10 +1,8 @@
-import { fetch } from "undici";
 import { config, requireApiKeys } from "../config.js";
 import { logger } from "../logger.js";
+import type { PlayerResponse } from "../types/youtube.js";
 import { randomBetween, randomItem } from "../utils/random.js";
 import { sleep } from "../utils/sleep.js";
-
-export type PlayerResponse = Record<string, unknown>;
 
 type FetchOpts = {
   videoId: string;
@@ -12,7 +10,7 @@ type FetchOpts = {
   maxAttempts?: number;
 };
 
-let httpFetch = fetch;
+let httpFetch: typeof fetch = globalThis.fetch;
 
 export const setHttpClient = (fn: typeof fetch) => {
   httpFetch = fn;

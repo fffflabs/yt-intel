@@ -1,6 +1,6 @@
 # Data layout (yt-intel)
 
-Canonical flow for bot/web:
+Canonical layout for this repository:
 - Channel registry: `channels.json` — id/slug/title/lang + paths to list, transcripts dir, export file.
 - Video lists (input): `lists/<channel>.txt` — one video ID per line.
 - Transcripts (canonical): `video_data/<channel>/<video>.json` — per-video outputs.
@@ -9,5 +9,5 @@ Canonical flow for bot/web:
 
 Rules:
 - Do not delete `video_data/` or `tests/fixtures/python_baseline/`.
-- Prefer writing new channel lists under `lists/` and exports under `exports/`.
+- Keep generated exports under `exports/` rather than repo root.
 - If regenerating exports, overwrite in `exports/` and (optionally) archive old versions under `archive/`.

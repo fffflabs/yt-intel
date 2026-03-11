@@ -1,0 +1,20 @@
+[
+  {
+    "video_id": "demo123abc",
+    "channel": "DevOops_conf",
+    "title": "Example conference talk",
+    "views": 1234,
+    "duration": 845,
+    "published": "2024-10-05T09:30:00-08:00",
+    "text": "This is a compact example transcript artifact produced by the fetch flow. Real outputs contain the same fields with longer normalized transcript text."
+  },
+  {
+    "video_id": "demo456xyz",
+    "channel": "DevOops_conf",
+    "title": "Example panel discussion",
+    "views": 987,
+    "duration": 1260,
+    "published": "2024-11-14T14:00:00-08:00",
+    "text": "This second item shows the combined export format written under the exports directory for a channel-level dataset."
+  }
+]

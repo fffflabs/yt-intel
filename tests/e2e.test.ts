@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fetchSubsAndSave } from "../src/flows/fetchSingle.js";
+import type { PlayerResponse } from "../src/types/youtube.js";
 
 const baselineRoot = path.join("tests", "fixtures", "python_baseline");
 
@@ -24,7 +25,7 @@ export const runE2eTests = async () => {
 
   const tempOut = await makeTempDir();
 
-  const fakePlayerData = {
+  const fakePlayerData: PlayerResponse = {
     videoDetails: {
       title: baseline.title,
       viewCount: String(baseline.views),
@@ -57,7 +58,7 @@ export const runE2eTests = async () => {
     channel,
     outRoot: tempOut,
     skipInitialDelay: true,
-    fetchPlayerData: fakeFetchPlayer as any,
+    fetchPlayerData: fakeFetchPlayer,
     downloadText: fakeDownload
   });
 
